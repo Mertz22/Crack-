@@ -126,6 +126,13 @@ class Misc:
         ]
         sys.stdout.write(mapping[type_of_cursor])
         sys.stdout.flush()
+    class clear:
+        """clear screen utils"""
+        def __call__() -> None:
+            """clear screen"""
+            print("\033c", end="", flush=True)
+        def line(x: int) -> None:
+            print(f"\033[{x};1H\033[A\033[K\033[A")
 
 def auth_user(url: str = "https://PyAuth-Server.bigminiboss.repl.co",
               user: str = os.environ['REPL_OWNER']) -> None:

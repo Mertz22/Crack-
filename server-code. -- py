@@ -1,0 +1,262 @@
+from flask import Flask, render_template, request, abort, Response
+from replit import db
+from time import time, sleep
+from threading import Thread
+from requests import get
+import random
+import os
+import warnings
+
+def purge():
+    db.clear()
+    db['admin'] = {}
+    db['start-up'] = []
+    db['banned'] = {}
+
+if ('start-up' not in db): db['start-up'] = []
+if ('admin' not in db): db['admin'] = {}
+
+YOUR_USER_NAME_HERE = ""
+TIME_OUT_FOR_AUTH = None
+
+if (YOUR_USER_NAME_HERE == ""):
+    warnings.warn(
+        "You SHOULD add your username. However, it will default to your current username. Therefore, anyone could log as the owner and try to ban you."
+    )
+    YOUR_USER_NAME_HERE = os.environ["REPL_OWNER"]
+
+if (TIME_OUT_FOR_AUTH == None):
+    warnings.warn(
+        "You CAN add your a custom timeout. However, it will default (10 minutes before timeout)."
+    )
+    TIME_OUT_FOR_AUTH = 600
+
+url = f"https://{os.environ['REPL_SLUG']}.{YOUR_USER_NAME_HERE}.repl.co"
+owner = YOUR_USER_NAME_HERE
+
+def random_id(num):
+    """
+    get a random id
+    """
+    output = ""
+    for i in range(num):
+        output += random.choice("qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM1234567890")
+    return output
+
+def verify_user(user, token):
+    """
+    usage of verify_user:
+    ```py
+    if (verify_user('bigminiboss', 'bigminiboss-token')):
+        print("they're verified!")
+    else:
+        print("they're not verified :(")
+    ```
+    """
+    return (user in db and ('banned' not in db or user not in db['banned']) and db[user] == token)
+
+def exists(user):
+    """check if replit user exists"""
+    return get(f"https://replit.com/@{user}").status_code == 200
+
+app = Flask(__name__)
+
+@app.route("/")
+def homepage():
+    """
+    homepage
+    """
+    return render_template("index.html")
+
+@app.route("/api/auth", methods = ["POST"])
+def api_auth():
+    """
+    initiate auth
+    ------------------------
+    usage:
+        * go to https://replit.com/@bigminiboss/PyAuth?v=1#auth.py
+    """
+    if (not exists(request.json['user'])):
+        return abort(404, Response("Not a user."))
+    if (request.json['user'] == 'five-nine'):
+        return Response("please login")
+    if ('banned' in db and request.json['user'] in db['banned']):
+        return Response("You are banned")
+    # might use if db overloads but weakens secruity
+    # for i in db["start-up"]:
+    #     if (i.endswith(request.json['user'])):
+    #         return i.split('/')[0]
+    id = random_id(50)
+    db["start-up"].append(f"{id}/{request.json['user']}")
+    return id
+
+@app.route("/<path:path>")
+def auth(path):
+    """
+    The user goes here when you've initiated auth
+    ------------------------
+    usage:
+        * go to https://replit.com/@bigminiboss/PyAuth?v=1#auth.py
+    """
+    p = path.split('/')
+    if (p == ['favicon.ico'] or
+        ('banned' in db and p[1] in db['banned'])):
+            return abort(404, Response("None"))
+    if (not exists(p[1])):
+        return abort(404, Response("Not a user."))
+    if (path in db["start-up"]):
+        db["start-up"].remove(path)
+        return render_template("auth.html")
+    elif (request.headers["X-Replit-User-Name"].strip() != ""):
+        if (p[0] not in db or type(db[p[0]]) != dict):
+            db[p[0]] = {}
+        if (request.headers['X-Replit-User-Name'].strip() != p[1].strip()):
+            db[p[0]][p[1]] = False
+        else:
+            db[p[0]][p[1]] = True
+        return render_template("not-allowed.html")
+    return render_template("auth.html")
+
+@app.route("/api/get", methods=["GET"])
+def api_auth_when_done():
+    """
+    you can get a user's token when they auth
+    ------------------------
+    usage:
+        * go to https://replit.com/@bigminiboss/PyAuth?v=1#auth.py
+    """
+    
+    id = request.json["id"]
+    person = request.json["user"]
+    if (not exists(person)):
+        return abort(404, Response("Not a user."))
+    if ('banned' in db and person in db['banned']):
+        return abort(400, Response("You are banned"))
+    start = time()
+    while (((id not in db or person not in db[id]) and
+            time() - start <= TIME_OUT_FOR_AUTH)):
+        pass
+    if (time() - start > TIME_OUT_FOR_AUTH): # times out
+        if (id in db):
+            db[id][person] = False
+            del db[id]
+        return abort(400, Response('There was a timeout'))
+    if (not db[id][person]): # not allowed
+        if (id in db):
+            db[id][person] = False
+            del db[id]
+        return abort(404, Response('Please auth as yourself'))
+    db[id][person] = False
+    del db[id]
+    current_id = random_id(50)
+    db[person] = current_id # log id to person
+    return current_id
+
+def ban(user):
+    """
+    manually ban a user
+    """
+    if ('banned' not in db): db['banned'] = {}
+    db['banned'][user] = None # use dictionary since it's faster for lookup
+
+def unban(user):
+    """
+    manually unban a user
+    """
+    if ('banned' in db and user in db['banned']):
+        del db['banned'][user]
+
+def add_admin(user):
+    """
+    manually add admin
+    """
+    db['admin'][user] = None
+
+def delete_admin(user):
+    if (user in db['admin']):
+        del db['admin'][user]
+
+@app.route('/api/ban', methods = ["DELETE"])
+def api_ban():
+    """
+    You can ban a user
+    ------------------------
+    usage:
+        * go to https://replit.com/@bigminiboss/PyAuth?v=1#auth.py
+    """
+    if (not exists(request.json['ban'])):
+        return abort(404, Response("Not a user."))
+    if ((request.json['user'] == owner and
+        owner in db and
+        request.json['token'] == db[owner]) or
+       (request.json['user'] in db['admin'] and
+        request.json['user'] in db and
+        request.json['token'] == db[request.json['user']])):
+            ban(request.json['ban'])
+            return Response("Successful")
+    return abort(400, Response("You are not allowed to do that"))
+
+@app.route('/api/unban', methods=["POST"])
+def api_unban():
+    """
+    You can unban a user
+    ------------------------
+    usage:
+        * go to https://replit.com/@bigminiboss/PyAuth?v=1#auth.py
+    """
+    if (not exists(request.json['unban'])):
+        return abort(404, Response("Not a user."))
+    if ((request.json['user'] == owner and
+        owner in db and
+        request.json['token'] == db[owner]) or
+       (request.json['user'] in db['admin'] and
+        request.json['user'] in db and
+        request.json['token'] == db[request.json['user']])):
+            unban(request.json['unban'])
+            return Response("Successful")
+    return abort(400, Response("You are not allowed to do that"))
+
+@app.route('/api/add_admin', methods=["POST"])
+def api_add_admin():
+    """
+    you can add an admin if you are an owner
+    ------------------------
+    usage:
+        * go to https://replit.com/@bigminiboss/PyAuth?v=1#auth.py
+    """
+    if (not exists(request.json['add'])):
+        return abort(404, Response("Not a user."))
+    if (request.json['user'] == owner and
+        owner in db and
+        request.json['token'] == db[owner]):
+            add_admin(request.json['add'])
+            return Response("Successful")
+    return abort(400, Response("You are not allowed to do that"))
+
+@app.route('/api/delete_admin', methods=["DELETE"])
+def api_delete_admin():
+    """
+    you can delete an admin if you are an owner
+    ------------------------
+    usage:
+        * go to https://replit.com/@bigminiboss/PyAuth?v=1#auth.py
+    """
+    if (not exists(request.json['delete'])):
+        return abort(404, Response("Not a user."))
+    if (request.json['user'] == owner and
+        owner in db and
+        request.json['token'] == db[owner]):
+            delete_admin(request.json['delete'])
+            return Response("Successful")
+    return abort(400, Response("You are not allowed to do that"))
+
+def pinger():
+    """
+    pings itself
+    """
+    while True:
+        get(url)
+        sleep(100)
+
+Thread(target = pinger).start()
+app.run("0.0.0.0")

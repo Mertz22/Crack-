@@ -1,4 +1,3 @@
-
 import os
 import requests
 from .force_types import force_type

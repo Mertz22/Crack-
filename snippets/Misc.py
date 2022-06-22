@@ -38,3 +38,11 @@ def cursor(type_of_cursor: int):
     ]
     sys.stdout.write(mapping[type_of_cursor])
     sys.stdout.flush()
+
+class Clear:
+    """clear screen utils"""
+    def __call__(self) -> None:
+        """clear screen"""
+        print("\033c", end="", flush=True)
+
+clear = Clear()

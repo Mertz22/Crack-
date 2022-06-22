@@ -10,8 +10,10 @@ from auth import (auth_user,
                   add_admin,
                   delete_admin,
                   exists,
-                  Misc)
+                  Misc,
+                  __doc__)
 from .get_lines import get_lines
+from time import sleep
 import os
 
 blue = "\033[34m"
@@ -21,14 +23,15 @@ end = "\033[0m"
 yellow = "\033[33m"
 
 @click.group()
-def cli():
+@click.version_option("0.1.0")
+def cli() -> None:
     """command line for PyAuth"""
 
 @cli.command(name = "ban")
 @click.argument("user")
 @click.argument("url", default = "https://PyAuth-Server.bigminiboss.repl.co")
 @click.argument("owner", default = os.environ["REPL_OWNER"])
-def cli_ban(user: str, url: str, owner: str):
+def cli_ban(user: str, url: str, owner: str) -> None:
     """
     \b
     user: str (required)
@@ -46,7 +49,7 @@ def cli_ban(user: str, url: str, owner: str):
 @click.argument("user")
 @click.argument("url", default = "https://PyAuth-Server.bigminiboss.repl.co")
 @click.argument("owner", default = os.environ["REPL_OWNER"])
-def cli_unban(user: str, url: str, owner: str):
+def cli_unban(user: str, url: str, owner: str) -> None:
     """
     \b
     user: str (required)
@@ -62,7 +65,7 @@ def cli_unban(user: str, url: str, owner: str):
 
 @cli.command(name = "exists")
 @click.argument("user")
-def cli_exists(user: str):
+def cli_exists(user: str) -> None:
     """
     \b
     Check if user exists in the replit database
@@ -74,7 +77,7 @@ def cli_exists(user: str):
 @click.argument("user")
 @click.argument("url", default = "https://PyAuth-Server.bigminiboss.repl.co")
 @click.argument("owner", default = os.environ["REPL_OWNER"])
-def cli_add_admin(user: str, url: str, owner: str):
+def cli_add_admin(user: str, url: str, owner: str) -> None:
     """
     \b
     user: str (required)
@@ -90,7 +93,7 @@ def cli_add_admin(user: str, url: str, owner: str):
 @click.argument("user")
 @click.argument("url", default = "https://PyAuth-Server.bigminiboss.repl.co")
 @click.argument("owner", default = os.environ["REPL_OWNER"])
-def cli_delete_admin(user: str, url: str, owner: str):
+def cli_delete_admin(user: str, url: str, owner: str) -> None:
     """
     \b
     user: str (required)
@@ -105,7 +108,7 @@ def cli_delete_admin(user: str, url: str, owner: str):
 @cli.command(name = "auth")
 @click.argument("user", default = os.environ["REPL_OWNER"])
 @click.argument("url", default = "https://PyAuth-Server.bigminiboss.repl.co")
-def cli_auth(user: str, url: str):
+def cli_auth(user: str, url: str) -> None:
     """
     \b
     user: str (required)
@@ -114,11 +117,11 @@ def cli_auth(user: str, url: str):
         PyAuth server url
     """
     auth_user(url, user)
-    click.echo(f"successfully authed you!")
+    click.echo(f"{green}successfully{end} authed you!")
 
 @cli.command(name = "cursor")
 @click.argument("num", type=int)
-def cli_cursor(num: int):
+def cli_cursor(num: int) -> None:
     """
     \b
     hide/show/other cursor operations
@@ -145,16 +148,28 @@ def cli_cursor(num: int):
     Misc.cursor(num)
 
 @cli.command(name = "easter-egg")
-def cli_easter_egg():
-    click.echo(f"PyAuth is awesome! Easter-egg was unlocked")
+def cli_easter_egg() -> None:
+    """wow: an easter egg"""
+    click.echo(f"PyAuth is {red}awesome{end}! {blue}Easter{end}-{green}egg{end} unlocked!")
+    Misc.cursor(0)
+    for i in range(18):
+        click.echo(f"you got{'.' * (i % 4)}   \r", nl="")
+        sleep(0.15)
+    Misc.cursor(1)
+    click.echo(f"{blue}the prior was just an {red}animation{end}{blue}, it was {red}not{end}{blue} doing anything{end}\nA docstring!\n{__doc__}", nl="")
 
 @cli.command(name = "get-lines")
-@click.option('-q', is_flag = True)
-def cli_get_lines(q: bool):
+@click.option('-q', is_flag = True, help = "whether or not to output the file locations of the files used to write this code")
+def cli_get_lines(q: bool) -> None:
     """
-    see how many lines we're used to create this project (excluding the server)
+    see how many lines were used to create this project
     """
-    click.echo(f"this project used {get_lines(os.getcwd()) + get_lines(os.getcwd() + '/src/pyauth', q)} lines")
+    click.echo(f"this project used {green}{get_lines(os.getcwd(), q, click.echo) + get_lines(os.getcwd() + '/src/pyauth', q, click.echo)}{end} lines of code!")
+
+@cli.command(name = "clear")
+def cli_clear():
+    """clear screen"""
+    click.echo("\033c", nl="")
 
 if (__name__ == "__main__"):
     cli(prog_name = "pyauth")
