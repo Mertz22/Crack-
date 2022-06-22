@@ -43,17 +43,18 @@ class MustBeFunction(Exception):
 class ForceType(Exception):
     """Exception if type should be forced but is not"""
 
-def loading():
+def loading() -> None:
     """loading animation for exists fetch function"""
     i = 0
     Misc.cursor(0)
     while fetching:
-        i = (i + 1) % 3
         print(f"fetching data{'.' * i}\r", end="", flush=True)
-        sleep(0.05)
+        sleep(0.5)
+        i = (i + 1) % 3
     Misc.cursor(1)
 
-def force_type_pass_function(*args: List[Any], **kwargs: Dict[Any, Any]) -> bool:
+def force_type_pass_function(*args: List[Any],
+                             **kwargs: Dict[Any, Any]) -> bool:
     """function for force_type that does nothing"""
     return True
 

@@ -11,3 +11,4 @@ import os
 def main():
     # auth.token is deleted when you use the wrapper for safety.
     print("Your token is", auth.token)
+

@@ -1,19 +1,20 @@
 import requests
 from .force_types import force_type
+from .Misc import cursor
 from threading import Thread
 from time import sleep
 
 fetching = False
 
-def loading():
+def loading() -> None:
     """loading animation for exists fetch function"""
     i = 0
-    Misc.cursor(0)
+    cursor(0)
     while fetching:
-        i = (i + 1) % 3
         print(f"fetching data{'.' * i}\r", end="", flush=True)
-        sleep(0.05)
-    Misc.cursor(1)
+        sleep(0.5)
+        i = (i + 1) % 3
+    cursor(1)
 
 def exists(user: str) -> bool:
     global fetching

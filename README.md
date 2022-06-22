@@ -179,3 +179,19 @@ pyauth delete USER
 pyauth cursor NUM
 
 ```
+
+### see how many lines it took to create this project
+
+```bash
+
+pyauth get-lines
+
+```
+
+#### quiet
+
+```bash
+
+pyauth get-lines -q
+
+```

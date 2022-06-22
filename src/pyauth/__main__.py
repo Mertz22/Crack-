@@ -4,13 +4,14 @@
 # put into src/pyauth because https://github.com/replit/replit-py/
 
 import click
-from .auth import (auth_user,
+from auth import (auth_user,
                   ban,
                   unban,
                   add_admin,
                   delete_admin,
                   exists,
                   Misc)
+from .get_lines import get_lines
 import os
 
 blue = "\033[34m"
@@ -146,6 +147,14 @@ def cli_cursor(num: int):
 @cli.command(name = "easter-egg")
 def cli_easter_egg():
     click.echo(f"PyAuth is awesome! Easter-egg was unlocked")
+
+@cli.command(name = "get-lines")
+@click.option('-q', is_flag = True)
+def cli_get_lines(q: bool):
+    """
+    see how many lines we're used to create this project (excluding the server)
+    """
+    click.echo(f"this project used {get_lines(os.getcwd()) + get_lines(os.getcwd() + '/src/pyauth', q)} lines")
 
 if (__name__ == "__main__"):
     cli(prog_name = "pyauth")

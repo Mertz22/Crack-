@@ -8,8 +8,6 @@ entrypoint = "main.py"
 # be hidden in the workspace.
 hidden = ["venv", ".config", "**/__pycache__", "**/.mypy_cache", "**/*.pyc"]
 
-onBoot = "chmod +x cli.py"
-
 # Specifies which nix channel to use when building the environment.
 [nix]
 channel = "stable-21_11"
