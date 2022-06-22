@@ -18,9 +18,12 @@ from typing import (Callable as Function,
                     List,
                     Dict)
 from types import FunctionType
+from threading import Thread
+from time import sleep
 
 token = None
 final_action_executed = False
+fetching = False
 
 class AuthFailed(Exception):
     """Exception to be raised when auth fails (timeout, server restart, or 5xx error)"""
@@ -40,6 +43,15 @@ class MustBeFunction(Exception):
 class ForceType(Exception):
     """Exception if type should be forced but is not"""
 
+def loading():
+    """loading animation for exists fetch function"""
+    i = 0
+    while fetching:
+        i = (i + 1) % 3
+        print(f"\033cfetching data{'.' * i}", end="")
+        sleep(0.05)
+    print("\033c", end="")
+
 def force_type_pass_function(*args: List[Any], **kwargs: Dict[Any, Any]) -> bool:
     """function for force_type that does nothing"""
     return True
@@ -56,9 +68,17 @@ def force_type(variable: Any,
         raise ForceType(f"Variable must comply with function check {func_check}")
 
 def exists(user: str) -> bool:
+    global fetching
     """returns if user exists on replit"""
     force_type(user, str)
-    return requests.get(f"https://replit.com/@{user}").status_code == 200
+    fetching = True
+    loading_animation = Thread(target = loading)
+    loading_animation.start()
+    try:
+        return requests.get(f"https://replit.com/@{user}").status_code == 200
+    finally:
+        fetching = False
+        loading_animation.join()
 
 class Misc:
     """
