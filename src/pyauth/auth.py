@@ -46,11 +46,12 @@ class ForceType(Exception):
 def loading():
     """loading animation for exists fetch function"""
     i = 0
+    Misc.cursor(0)
     while fetching:
         i = (i + 1) % 3
-        print(f"\033cfetching data{'.' * i}", end="")
+        print(f"fetching data{'.' * i}\r", end="", flush=True)
         sleep(0.05)
-    print("\033c", end="")
+    Misc.cursor(1)
 
 def force_type_pass_function(*args: List[Any], **kwargs: Dict[Any, Any]) -> bool:
     """function for force_type that does nothing"""
