@@ -15,8 +15,8 @@ import os
 import sys
 from typing import (Callable as Function,
                     Any,
-                    List,
-                    Dict)
+                    Dict,
+                    Tuple)
 from types import FunctionType
 from threading import Thread
 from time import sleep
@@ -48,12 +48,12 @@ def loading() -> None:
     i = 0
     Misc.cursor(0)
     while fetching:
-        print(f"fetching data{'.' * i}\r", end="", flush=True)
+        print(f"fetching data{'.' * i}    \r", end="", flush=True)
         sleep(0.5)
-        i = (i + 1) % 3
+        i = (i + 1) % 4
     Misc.cursor(1)
 
-def force_type_pass_function(*args: List[Any],
+def force_type_pass_function(*args: Tuple[Any],
                              **kwargs: Dict[Any, Any]) -> bool:
     """function for force_type that does nothing"""
     return True
@@ -126,6 +126,19 @@ class Misc:
         ]
         sys.stdout.write(mapping[type_of_cursor])
         sys.stdout.flush()
+    def must_be_of_strings(obj):
+        """Must be tuple of strings"""
+        for i in obj:
+            if (type(i) != str): return False
+        return True
+    def typer(*words: Tuple[str], end: str="\n", sep: str="") -> None:
+        """typer writer effect"""
+        force_type(words, tuple, must_be_of_strings)
+        force_type(end, str)
+        force_type(sep)
+        for i in sep.join(words) + end:
+            sys.stdout.write(i)
+            sys.stdout.flush()
     class clear:
         """clear screen utils"""
         def __call__() -> None:

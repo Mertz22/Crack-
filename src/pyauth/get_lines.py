@@ -9,7 +9,7 @@ def recursive(path, quiet=False, printer = print):
     for i in os.listdir(path):
         if (os.path.isdir(i)):
             get_lines(f"{path}/{i}", quiet, printer)
-        if (i.endswith(".py") or i.endswith(". -- py")):
+        if (i.endswith(".py") or i.endswith(".py_") or i.endswith('.md')):
             amount = len(open(f"{path}/{i}").read().split('\n'))
             output += amount
             if (not quiet):

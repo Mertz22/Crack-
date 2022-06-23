@@ -1,6 +1,8 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-# inspired by https://github.com/replit/replit-py/tree/master/src/replit
+"""
+cli command line for pyauth
+"""
+
+# inspired by https://github.com/replit/replit-py/blob/master/src/replit/__main__.py
 # put into src/pyauth because https://github.com/replit/replit-py/
 
 import click
@@ -24,8 +26,14 @@ yellow = "\033[33m"
 
 @click.group()
 @click.version_option("0.1.0")
-def cli() -> None:
-    """command line for PyAuth"""
+def cli(*args, **kwargs) -> None:
+    """
+    \b
+    command line for PyAuth
+    \b
+
+    Wow! this project has come so far from the side project to add replit auth to console to a full fledged 2400+ lines project...
+    """
 
 @cli.command(name = "ban")
 @click.argument("user")
@@ -156,7 +164,7 @@ def cli_easter_egg() -> None:
         click.echo(f"you got{'.' * (i % 4)}   \r", nl="")
         sleep(0.15)
     Misc.cursor(1)
-    click.echo(f"{blue}the prior was just an {red}animation{end}{blue}, it was {red}not{end}{blue} doing anything{end}\nA docstring!\n{__doc__}", nl="")
+    click.echo(f"A {green}docstring{end}!\n{__doc__}", nl="")
 
 @cli.command(name = "get-lines")
 @click.option('-q', is_flag = True, help = "whether or not to output the file locations of the files used to write this code")
@@ -167,9 +175,25 @@ def cli_get_lines(q: bool) -> None:
     click.echo(f"this project used {green}{get_lines(os.getcwd(), q, click.echo) + get_lines(os.getcwd() + '/src/pyauth', q, click.echo)}{end} lines of code!")
 
 @cli.command(name = "clear")
-def cli_clear():
+def cli_clear() -> None:
     """clear screen"""
     click.echo("\033c", nl="")
 
+@cli.command(name = "docstring")
+def cli_docstring() -> None:
+    """
+    Wow! this project has come so far from the side project to add replit auth to console to a full fledged 2400+ (including markdown & server code) lines project!
+    It's truly a labor of love from the built in replit-py styled command line to the meticulously labeled docstrings to the superbly crafted and ease-of-use functions!
+    The project is a replit auth solution for console with the server being housed at [PyAuth Server](https://PyAuth-Server.bigminiboss.repl.co) and the [forkable version here](https://PyAuth-Server-forkable.bigminiboss.repl.co)
+    It uses uses replit db, replit auth, and replit hosting to create a secure console application auth system and uses replit's linux virtual machine for cursor operation as well as itsdangerous for hashing.
+    This is for the replit template jam, recieving enough accolades would allow me to improve it much more (allowing me to confer with people on the homepage of the repl)
+    """
+    click.echo(cli_docstring.__doc__)
+
+@cli.command(name = "replit.com")
+def cli_replit_dot_com() -> None:
+    """This is for the replit template jam, recieving enough accolades would allow me to improve it much more (allowing me to confer with people on the homepage of the repl)"""
+    click.echo(cli_replit_dot_com.__doc__)
+    
 if (__name__ == "__main__"):
     cli(prog_name = "pyauth")

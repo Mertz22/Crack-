@@ -6,6 +6,15 @@ from requests import get
 import random
 import os
 import warnings
+import uuid
+from itsdangerous.url_safe import URLSafeSerializer as hash_
+
+class PleaseAddSecurity(Exception):
+    """Exception for when they need security"""
+
+if ('SECRET_KEY' not in os.environ or 'SALT' not in os.environ):
+    raise PleaseAddSecurity("please add SECRET_KEY at the Secrets section and SALT (they can be anything)")
+hash = hash_(os.environ["SECRET_KEY"], os.environ['SALT'])
 
 def purge():
     db.clear()
@@ -35,13 +44,10 @@ url = f"https://{os.environ['REPL_SLUG']}.{YOUR_USER_NAME_HERE}.repl.co"
 owner = YOUR_USER_NAME_HERE
 
 def random_id(num):
-    """
-    get a random id
-    """
     output = ""
     for i in range(num):
         output += random.choice("qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM1234567890")
-    return output
+    return hash.dumps(str(uuid.uuid5(uuid.NAMESPACE_DNS, f"https://{os.environ['REPL_SLUG']}.{YOUR_USER_NAME_HERE}.repl.co")) + str(uuid.uuid4()) + output + str(uuid.uuid1()) + str(uuid.uuid3(uuid.NAMESPACE_DNS, f"https://{os.environ['REPL_SLUG']}.{YOUR_USER_NAME_HERE}.repl.co")))
 
 def verify_user(user, token):
     """
@@ -86,7 +92,7 @@ def api_auth():
     # for i in db["start-up"]:
     #     if (i.endswith(request.json['user'])):
     #         return i.split('/')[0]
-    id = random_id(50)
+    id = hash.loads(random_id(50))
     db["start-up"].append(f"{id}/{request.json['user']}")
     return id
 
@@ -149,7 +155,7 @@ def api_auth_when_done():
     db[id][person] = False
     del db[id]
     current_id = random_id(50)
-    db[person] = current_id # log id to person
+    db[person] = hash.loads(current_id) # log id to person
     return current_id
 
 def ban(user):
@@ -188,10 +194,10 @@ def api_ban():
         return abort(404, Response("Not a user."))
     if ((request.json['user'] == owner and
         owner in db and
-        request.json['token'] == db[owner]) or
+        hash.loads(request.json['token']) == db[owner]) or
        (request.json['user'] in db['admin'] and
         request.json['user'] in db and
-        request.json['token'] == db[request.json['user']])):
+        hash.loads(request.json['token']) == db[request.json['user']])):
             ban(request.json['ban'])
             return Response("Successful")
     return abort(400, Response("You are not allowed to do that"))
@@ -208,10 +214,10 @@ def api_unban():
         return abort(404, Response("Not a user."))
     if ((request.json['user'] == owner and
         owner in db and
-        request.json['token'] == db[owner]) or
+        hash.loads(request.json['token']) == db[owner]) or
        (request.json['user'] in db['admin'] and
         request.json['user'] in db and
-        request.json['token'] == db[request.json['user']])):
+        hash.loads(request.json['token']) == db[request.json['user']])):
             unban(request.json['unban'])
             return Response("Successful")
     return abort(400, Response("You are not allowed to do that"))
@@ -228,7 +234,7 @@ def api_add_admin():
         return abort(404, Response("Not a user."))
     if (request.json['user'] == owner and
         owner in db and
-        request.json['token'] == db[owner]):
+        hash.loads(request.json['token']) == db[owner]):
             add_admin(request.json['add'])
             return Response("Successful")
     return abort(400, Response("You are not allowed to do that"))
@@ -245,7 +251,7 @@ def api_delete_admin():
         return abort(404, Response("Not a user."))
     if (request.json['user'] == owner and
         owner in db and
-        request.json['token'] == db[owner]):
+        hash.loads(request.json['token']) == db[owner]):
             delete_admin(request.json['delete'])
             return Response("Successful")
     return abort(400, Response("You are not allowed to do that"))

@@ -11,9 +11,9 @@ def loading() -> None:
     i = 0
     cursor(0)
     while fetching:
-        print(f"fetching data{'.' * i}\r", end="", flush=True)
+        print(f"fetching data{'.' * i}    \r", end="", flush=True)
         sleep(0.5)
-        i = (i + 1) % 3
+        i = (i + 1) % 4
     cursor(1)
 
 def exists(user: str) -> bool:

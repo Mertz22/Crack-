@@ -1,5 +1,12 @@
 from .force_types import force_type
+from typing import Tuple
 import sys
+
+def must_be_of_strings(obj):
+    """Must be tuple of strings"""
+    for i in obj:
+        if (type(i) != str): return False
+    return True
 
 def cursor(type_of_cursor: int):
     """
@@ -38,6 +45,15 @@ def cursor(type_of_cursor: int):
     ]
     sys.stdout.write(mapping[type_of_cursor])
     sys.stdout.flush()
+
+def typer(*words: Tuple[str], end: str="\n", sep: str="") -> None:
+    """typer writer effect"""
+    force_type(words, tuple, must_be_of_strings)
+    force_type(end, str)
+    force_type(sep)
+    for i in sep.join(words) + end:
+        sys.stdout.write(i)
+        sys.stdout.flush()
 
 class Clear:
     """clear screen utils"""

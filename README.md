@@ -8,6 +8,16 @@ You can fork and make your own server [here](https://replit.com/@bigminiboss/PyA
 
 Allows you to force types in python as well as add/delete admins, (un)ban, and auth users.
 
+Wow! this project has come so far from the side project to add replit auth to console to a full fledged 2400+ (including markdown & server code) lines project!
+
+It's truly a labor of love from the built in replit-py styled command line to the meticulously labeled docstrings to the superbly crafted and ease-of-use functions!
+
+The project is a replit auth solution for console with the server being housed at [PyAuth Server](https://PyAuth-Server.bigminiboss.repl.co) and the [forkable version here](https://replit.com/@bigminiboss/PyAuth-Server-forkable)
+
+It uses uses replit db, replit auth, and replit hosting to create a secure console application auth system and uses replit's linux virtual machine for cursor operation.
+
+If I achieve a high enough position, I will likely be able to confer with replit to increase user experience on the homepage of this repl!
+
 # Everything is stored in auth.py but snippets can be take from the snippets folder
 
 #### you can also fork the [pyauth server](https://replit.com/@bigminiboss/PyAuth-Server-forkable?v=1) and use that as your flask server
