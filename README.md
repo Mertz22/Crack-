@@ -146,9 +146,7 @@ pyauth exists bigminiboss
 
 ```
 
-```
-bigminiboss is a valid user
-```
+![image](image_3.png)
 
 ### ban
 
@@ -189,6 +187,7 @@ pyauth delete USER
 pyauth cursor NUM
 
 ```
+![image](image_2.png)
 
 ### see how many lines it took to create this project
 
@@ -197,6 +196,7 @@ pyauth cursor NUM
 pyauth get-lines
 
 ```
+![image](image.png)
 
 #### quiet
 

@@ -89,7 +89,7 @@ class Misc:
     includes:
         * cursor(type_of_cursor: int)
     """
-    def cursor(type_of_cursor: int):
+    def cursor(type_of_cursor: int) -> None:
         """
         hide/show/other cursor operations
         -------------------------------
@@ -126,7 +126,7 @@ class Misc:
         ]
         sys.stdout.write(mapping[type_of_cursor])
         sys.stdout.flush()
-    def must_be_of_strings(obj):
+    def must_be_of_strings(obj) -> bool:
         """Must be tuple of strings"""
         for i in obj:
             if (type(i) != str): return False

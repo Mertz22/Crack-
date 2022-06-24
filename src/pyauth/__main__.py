@@ -32,7 +32,7 @@ def cli(*args, **kwargs) -> None:
     command line for PyAuth
     \b
 
-    Wow! this project has come so far from the side project to add replit auth to console to a full fledged 2400+ lines project...
+    Wow! this project has come so far from the side project to add replit auth to console to a full fledged 2500+ lines project...
     """
 
 @cli.command(name = "ban")
@@ -182,7 +182,7 @@ def cli_clear() -> None:
 @cli.command(name = "docstring")
 def cli_docstring() -> None:
     """
-    Wow! this project has come so far from the side project to add replit auth to console to a full fledged 2400+ (including markdown & server code) lines project!
+    Wow! this project has come so far from the side project to add replit auth to console to a full fledged 2500+ (including markdown & server code) lines project!
     It's truly a labor of love from the built in replit-py styled command line to the meticulously labeled docstrings to the superbly crafted and ease-of-use functions!
     The project is a replit auth solution for console with the server being housed at [PyAuth Server](https://PyAuth-Server.bigminiboss.repl.co) and the [forkable version here](https://PyAuth-Server-forkable.bigminiboss.repl.co)
     It uses uses replit db, replit auth, and replit hosting to create a secure console application auth system and uses replit's linux virtual machine for cursor operation as well as itsdangerous for hashing.

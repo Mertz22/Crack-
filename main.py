@@ -1,5 +1,5 @@
 """
-Wow! this project has come so far from the side project to add replit auth to console to a full fledged 2400+ (including markdown & server code) lines project!
+Wow! this project has come so far from the side project to add replit auth to console to a full fledged 2500+ (including markdown & server code) lines project!
 It's truly a labor of love from the built in replit-py styled command line to the meticulously labeled docstrings to the superbly crafted and ease-of-use functions!
 The project is a replit auth solution for console with the server being housed at [PyAuth Server](https://PyAuth-Server.bigminiboss.repl.co) and the [forkable version here](https://PyAuth-Server-forkable.bigminiboss.repl.co)
 It uses uses replit db, replit auth, and replit hosting to create a secure console application auth system and uses replit's linux virtual machine for cursor operation as well as itsdangerous for hashing.
@@ -10,7 +10,12 @@ import auth
 import os
 
 # Exerpt
-print(__doc__.strip(), "thanks for listening!", "Cheers,", "bigminiboss", sep="\n", end="\n\n")
+print(__doc__.strip(),
+      "thanks for listening!",
+      "Cheers,",
+      "bigminiboss", 
+      sep="\n",
+      end="\n\n")
 
 # auths and then calls function specified function under decorater
 # auth: bool = True (default): will auth
